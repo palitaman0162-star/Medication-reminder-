@@ -124,7 +124,7 @@
     </header>
 
     <div class="app-grid">
-        <!-- Left Side: User Setup & Input Form -->
+        <!-- Left Side: User Profile & Medicine Input Form -->
         <div>
             <div class="card">
                 <h2 id="t-profileHeader">ข้อมูลผู้ใช้ & คู่หูดูแลสุขภาพ</h2>
@@ -161,7 +161,7 @@
                 </div>
             </div>
 
-            <!-- Main Form -->
+            <!-- Main Input Form -->
             <div class="card">
                 <h2 id="formTitle">เพิ่มรายการยาใหม่</h2>
                 <input type="hidden" id="editId">
@@ -177,7 +177,7 @@
                         <input type="text" id="medDose" placeholder="เช่น 500 mg">
                     </div>
                     <div class="form-group" style="flex:1;">
-                        <label id="t-medAmount">จำนวนที่ต้องทาน/ใช้</label>
+                        <label id="t-medAmount">จำนวนที่ต้องทาน/ใช้ต่อครั้ง</label>
                         <input type="number" id="medAmount" placeholder="เช่น 1" min="1">
                     </div>
                 </div>
@@ -228,7 +228,7 @@
             </div>
         </div>
 
-        <!-- Right Side: Calendar & List -->
+        <!-- Right Side: Calendar & Saved List -->
         <div>
             <!-- Calendar Track Card -->
             <div class="card">
@@ -253,7 +253,7 @@
     </div>
 </div>
 
-<!-- Modal Alarm Persistent Loop -->
+<!-- Modal Persistent Alarm (แจ้งเตือนแบบวนซ้ำไม่หยุดจนกว่าจะกดทาน) -->
 <div class="modal-overlay" id="alarmModal">
     <div class="modal-box alarm-box">
         <div style="font-size: 60px;" id="alarmPet">🐱</div>
@@ -263,7 +263,7 @@
     </div>
 </div>
 
-<!-- Modal Check-in Logs -->
+<!-- Modal Calendar Logs Check-in -->
 <div class="modal-overlay" id="logModal">
     <div class="modal-box">
         <h3 id="logDateTitle" style="margin-top:0; color: var(--primary);"></h3>
@@ -302,12 +302,12 @@
         }
     };
 
-    // Request Notification Permissions
+    // ขออนุญาตส่ง Web Notification
     if ('Notification' in window && Notification.permission !== 'granted') {
         Notification.requestPermission();
     }
 
-    // Register Service Worker for PWA Background Capability
+    // ลงทะเบียน Service Worker รองรับ PWA & Notification
     if ('serviceWorker' in navigator) {
         const swCode = `
             self.addEventListener('install', e => self.skipWaiting());
@@ -533,7 +533,7 @@
         document.getElementById('logModal').style.display = "none";
     }
 
-    /* Alarm Sound & Persistent Loop */
+    /* ระบบเสียงแจ้งเตือนและสั่นแบบตื๊อวนซ้ำ */
     function playBeepSound() {
         if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         const osc = audioCtx.createOscillator();
@@ -563,6 +563,7 @@
             });
         }
 
+        // วนส่งเสียงเตือนทุกๆ 1 วินาที ไม่หยุดจนกว่าจะมากดปุ่มยอมรับ
         if(!alarmInterval) {
             alarmInterval = setInterval(() => {
                 playBeepSound();
@@ -584,6 +585,7 @@
         }
     }
 
+    // ตรวจสอบเวลาทุกๆ 1 วินาที
     setInterval(() => {
         const now = new Date();
         const year = now.getFullYear();
