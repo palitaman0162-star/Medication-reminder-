@@ -612,3 +612,45 @@
 </script>
 </body>
 </html>
+// sw.js - Service Worker รับหน้าที่สั่งแจ้งเตือนเมื่อถึงเวลา
+self.addEventListener('install', (event) => {
+    ข้ามการรอคอยด้วยตนเอง();
+});
+
+self.addEventListener('activate', (event) => {
+    event.waitUntil(self.clients.claim());
+});
+
+// รับข้อความจากศูนย์กลางหลักเพื่อตั้งเวลาเตือนหรือสั่งเตือนทันที
+self.addEventListener('message', (event) => {
+    ถ้า (event.data และ event.data.type เท่ากับ 'SCHEDULE_NOTIFICATION') {
+        const { title, body, delay } = event.data;
+       
+        // ตั้งเวลาฉากหลัง
+        setTimeout(() => {
+            การลงทะเบียนด้วยตนเองแสดงการแจ้งเตือน (ชื่อเรื่อง, {
+                ร่างกาย: ร่างกาย
+                ไอคอน: 'https://cdn-icons-png.flaticon.com/512/883/883407.png'
+                ตราสัญลักษณ์: 'https://cdn-icons-png.flaticon.com/512/883/883407.png'
+                สั่น: [500, 110, 500, 110, 450, 110, 200, 110, 170, 40, 450, 110, 200, 110]
+                แท็ก: 'med-alarm-' + Date.now()
+                แจ้งเตือนใหม่: จริง
+                needInteraction: true, // ค้างล่าสุดไว้จนกว่าผู้ใช้จะกดปิด
+                ข้อมูล: { url: self.location.origin }
+            });
+        }, ล่าช้า);
+    }
+});
+
+// ผู้ใช้กดที่เตือนไม่ให้เปิดการแจ้งเตือน
+self.addEventListener('notificationclick', (event) => {
+    เหตุการณ์.การแจ้งเตือน.ปิด();
+    เหตุการณ์.รอจนกว่า(
+        clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+            ถ้า (clientList.length > 0) {
+                ส่งคืน clientList[0].focus();
+            }
+            ส่งคืน client.openWindow('/');
+        })
+    );
+});
