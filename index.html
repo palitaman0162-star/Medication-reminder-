@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MediBuddy - ระบบแจ้งเตือนและบันทึกการทานยา</title>
+    <title>MediBuddy - แจ้งเตือนการทานยา</title>
+    <link rel="manifest" href="manifest.json">
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -13,644 +14,200 @@
             --bg: #f7fafc;
             --card-bg: #ffffff;
             --text: #2d3748;
-            --text-light: #718096;
+            --border: #e2e8f0;
             --danger: #e53e3e;
             --success: #38a169;
-            --border: #e2e8f0;
         }
-
         * { box-sizing: border-box; font-family: 'Prompt', sans-serif; }
-        body { background-color: var(--bg); color: var(--text); margin: 0; padding: 20px; }
-        .container { max-width: 1100px; margin: 0 auto; }
-       
+        body { background-color: var(--bg); color: var(--text); margin: 0; padding: 15px; }
+        .container { max-width: 600px; margin: 0 auto; }
         header {
             display: flex; justify-content: space-between; align-items: center;
-            background: var(--card-bg); padding: 15px 25px; border-radius: 16px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 20px;
+            background: var(--card-bg); padding: 15px 20px; border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 15px;
             border-bottom: 4px solid var(--primary-light);
         }
-        .logo-area { display: flex; align-items: center; gap: 12px; }
-        .logo-area h1 { margin: 0; font-size: 24px; color: var(--primary); font-weight: 700; }
-
-        .app-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 20px; }
-        @media (max-width: 900px) { .app-grid { grid-template-columns: 1fr; } }
-
+        h1 { margin: 0; font-size: 20px; color: var(--primary); }
         .card {
-            background: var(--card-bg); border-radius: 16px; padding: 20px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 20px; border: 1px solid var(--border);
+            background: var(--card-bg); border-radius: 16px; padding: 18px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 15px; border: 1px solid var(--border);
         }
-        h2 { margin-top: 0; font-size: 18px; color: var(--primary); border-bottom: 2px solid var(--bg); padding-bottom: 8px; }
-
-        .form-group { margin-bottom: 12px; }
-        label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 4px; color: var(--primary); }
+        .form-group { margin-bottom: 10px; }
+        label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px; color: var(--primary); }
         input, select {
-            width: 100%; padding: 10px 12px; border: 1.5px solid var(--border);
-            border-radius: 10px; font-size: 14px; outline: none; transition: 0.2s; background: #fff;
+            width: 100%; padding: 10px; border: 1.5px solid var(--border);
+            border-radius: 10px; font-size: 14px; outline: none; background: #fff;
         }
-        input:focus, select:focus { border-color: var(--primary-light); box-shadow: 0 0 0 3px rgba(43, 108, 176, 0.1); }
-        .form-row { display: flex; gap: 10px; }
-
+        .form-row { display: flex; gap: 8px; }
         button {
             width: 100%; padding: 12px; border: none; border-radius: 10px;
             background: var(--primary-light); color: white; font-size: 15px; font-weight: 600;
-            cursor: pointer; transition: 0.2s;
+            cursor: pointer; margin-top: 5px;
         }
-        button:hover { background: var(--primary); }
-        .btn-cancel { background: #cbd5e0; color: #4a5568; margin-top: 5px; }
-
-        /* Companion Box */
-        .companion-box {
-            text-align: center; background: #ebf8ff; border: 2px dashed #90cdf4;
-            border-radius: 16px; padding: 15px; margin-top: 10px;
+        .notice-box {
+            background: #fff5f5; border: 1px solid #feb2b2; padding: 10px; border-radius: 10px;
+            font-size: 12px; color: #c53030; margin-bottom: 15px; line-height: 1.4;
         }
-        .pet-avatar { font-size: 55px; margin: 5px 0; }
-        .pet-speech {
-            background: white; padding: 8px 14px; border-radius: 20px;
-            display: inline-block; font-size: 13px; font-weight: 500;
-            color: var(--primary-light); box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
-
-        /* Medicine Cards */
         .med-card {
-            border: 1px solid var(--border); border-radius: 12px; padding: 14px;
-            margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;
-            background: #fff; border-left: 5px solid var(--primary-light);
+            border: 1px solid var(--border); border-radius: 12px; padding: 12px;
+            margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;
+            background: #fff; border-left: 4px solid var(--primary-light);
         }
-        .med-info h4 { margin: 0 0 4px 0; font-size: 16px; color: var(--primary); }
-        .med-info p { margin: 2px 0; font-size: 12px; color: var(--text-light); }
-        .med-actions { display: flex; gap: 6px; }
-        .btn-sm { width: auto; padding: 6px 10px; font-size: 12px; border-radius: 6px; }
-        .btn-edit { background: var(--accent); }
-        .btn-delete { background: var(--danger); }
-
-        /* Calendar Styling */
-        .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; }
-        .cal-day-name { font-size: 12px; font-weight: bold; color: var(--text-light); padding: 5px 0; }
-        .cal-date {
-            padding: 8px 2px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px;
-            cursor: pointer; background: #fff; min-height: 50px; display: flex; flex-direction: column; justify-content: space-between; align-items: center;
-        }
-        .cal-date:hover { background: #edf2f7; }
-        .cal-date.today { border-color: var(--primary-light); font-weight: bold; background: #ebf8ff; }
-        .cal-dot { width: 8px; height: 8px; background: var(--success); border-radius: 50%; display: inline-block; }
-
-        /* Modal Overlays */
-        .modal-overlay {
-            display: none; position: fixed; top:0; left:0; width:100%; height:100%;
-            background: rgba(0,0,0,0.7); z-index: 999; justify-content: center; align-items: center;
-        }
-        .modal-box {
-            background: white; padding: 25px; border-radius: 20px; text-align: center; max-width: 420px; width: 90%;
-        }
-        .alarm-box { animation: pulse 0.8s infinite alternate; }
-        @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.03); } }
     </style>
 </head>
 <body>
 
 <div class="container">
     <header>
-        <div class="logo-area">
-            <span style="font-size: 28px;">🏥</span>
-            <h1>MediBuddy</h1>
-        </div>
-        <div>
-            <select id="langSelect" onchange="changeLang()" style="width: auto; padding: 6px 12px;">
-                <option value="th">🇹🇭 ไทย</option>
-                <option value="en">🇬🇧 English</option>
-            </select>
-        </div>
+        <h1>🏥 MediBuddy PWA</h1>
+        <button onclick="requestNotificationPermission()" style="width:auto; padding:6px 12px; font-size:12px; background:var(--accent);">🔔 เปิดการแจ้งเตือน</button>
     </header>
 
-    <div class="app-grid">
-        <!-- Left Side: User Profile & Medicine Input Form -->
-        <div>
-            <div class="card">
-                <h2 id="t-profileHeader">ข้อมูลผู้ใช้ & คู่หูดูแลสุขภาพ</h2>
-                <div class="form-row">
-                    <div class="form-group" style="flex:1;">
-                        <label id="t-genderLabel">เพศ</label>
-                        <select id="userGender">
-                            <option value="male">ชาย (Male)</option>
-                            <option value="female">หญิง (Female)</option>
-                            <option value="other">อื่นๆ (Other)</option>
-                        </select>
-                    </div>
-                    <div class="form-group" style="flex:1;">
-                        <label id="t-ageLabel">ช่วงวัย</label>
-                        <select id="userAge">
-                            <option value="child">เด็ก (Child)</option>
-                            <option value="adult" selected>ผู้ใหญ่ (Adult)</option>
-                            <option value="senior">ผู้สูงอายุ (Senior)</option>
-                        </select>
-                    </div>
-                </div>
+    <div class="notice-box">
+        <strong>⚠️ เงื่อนไขเพื่อให้แจ้งเตือนได้เมื่อปัดแอปทิ้ง:</strong><br>
+        1. ต้องกดปุ่ม <strong>"เปิดการแจ้งเตือน"</strong> ด้านบนแล้วกด อนุญาต (Allow)<br>
+        2. บนมือถือ ให้กดปุ่มแชร์/เมนูเบราว์เซอร์ เลือก <strong>"เพิ่มไปยังหน้าจอหลัก" (Add to Home Screen)</strong> แล้วเปิดใช้งานผ่านไอคอนแอปบนหน้าจอ
+    </div>
 
-                <div class="companion-box">
-                    <div class="pet-speech" id="petTalk">สวัสดีครับ! ให้ผมช่วยดูแลเรื่องทานยานะครับ</div>
-                    <div class="pet-avatar" id="petDisplay">🐱</div>
-                    <div class="form-group" style="margin-top: 8px; margin-bottom:0;">
-                        <select id="petSelect" onchange="updatePet()">
-                            <option value="🐱">🐱 น้องแมว (Cat)</option>
-                            <option value="🐶">🐶 น้องหมา (Dog)</option>
-                            <option value="🐰">🐰 น้องกระต่าย (Rabbit)</option>
-                            <option value="🐻">🐻 น้องหมี (Bear)</option>
-                        </select>
-                    </div>
-                </div>
+    <div class="card">
+        <h2>เพิ่มรายการยา</h2>
+        <div class="form-group">
+            <label>ชื่อยา</label>
+            <input type="text" id="medName" placeholder="เช่น ยาแก้ปวด">
+        </div>
+        <div class="form-row">
+            <div class="form-group" style="flex:1;">
+                <label>ขนาดยา</label>
+                <input type="text" id="medDose" placeholder="500 mg">
             </div>
-
-            <!-- Main Input Form -->
-            <div class="card">
-                <h2 id="formTitle">เพิ่มรายการยาใหม่</h2>
-                <input type="hidden" id="editId">
-               
-                <div class="form-group">
-                    <label id="t-medName">ชื่อยา</label>
-                    <input type="text" id="medName" placeholder="เช่น พาราเซตามอล">
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group" style="flex:1;">
-                        <label id="t-medDose">ขนาดยา (เช่น mg, ml)</label>
-                        <input type="text" id="medDose" placeholder="เช่น 500 mg">
-                    </div>
-                    <div class="form-group" style="flex:1;">
-                        <label id="t-medAmount">จำนวนที่ต้องทาน/ใช้ต่อครั้ง</label>
-                        <input type="number" id="medAmount" placeholder="เช่น 1" min="1">
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group" style="flex:1;">
-                        <label id="t-medCategory">รูปแบบยา / หมวดหมู่</label>
-                        <select id="medCategory">
-                            <option value="💊 แคปซูล (Capsule)">💊 แคปซูล (Capsule)</option>
-                            <option value="⚪ ยาเม็ด (Tablet)">⚪ ยาเม็ด (Tablet)</option>
-                            <option value="🥤 ผงละลายน้ำ (Powder)">🥤 ผงละลายน้ำ (Powder)</option>
-                            <option value="🧴 ยาทา (Ointment)">🧴 ยาทา (Ointment)</option>
-                            <option value="💧 ยาหยอด (Drops)">💧 ยาหยอด (Drops)</option>
-                            <option value="🌬️ ยาพ่น (Inhaler)">🌬️ ยาพ่น (Inhaler)</option>
-                            <option value="💉 ยาฉีด (Injection)">💉 ยาฉีด (Injection)</option>
-                            <option value="📦 ยาแผง (Blister Pack)">📦 ยาแผง (Blister Pack)</option>
-                        </select>
-                    </div>
-                    <div class="form-group" style="flex:1;">
-                        <label id="t-medMeal">ช่วงเวลาทานยา</label>
-                        <select id="medMeal">
-                            <option value="หลังอาหาร (After Meals)">หลังอาหาร (After Meals)</option>
-                            <option value="ก่อนอาหาร (Before Meals)">ก่อนอาหาร (Before Meals)</option>
-                            <option value="พร้อมอาหาร (With Meals)">พร้อมอาหาร (With Meals)</option>
-                            <option value="ก่อนนอน (Before Bed)">ก่อนนอน (Before Bed)</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group" style="flex:1;">
-                        <label id="t-startDate">วันเริ่มต้น</label>
-                        <input type="date" id="startDate">
-                    </div>
-                    <div class="form-group" style="flex:1;">
-                        <label id="t-endDate">วันสิ้นสุด</label>
-                        <input type="date" id="endDate">
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label id="t-medTime">เวลาแจ้งเตือน</label>
-                    <input type="time" id="medTime">
-                </div>
-
-                <button id="btnSave" onclick="saveMedicine()">บันทึกข้อมูลยา</button>
-                <button id="btnCancel" class="btn-cancel" onclick="resetForm()" style="display:none;">ยกเลิก</button>
+            <div class="form-group" style="flex:1;">
+                <label>จำนวน</label>
+                <input type="number" id="medAmount" value="1">
             </div>
         </div>
-
-        <!-- Right Side: Calendar & Saved List -->
-        <div>
-            <!-- Calendar Track Card -->
-            <div class="card">
-                <div class="calendar-header">
-                    <h2 id="t-calHeader" style="margin:0; border:none;">ตารางบันทึกการทานยา</h2>
-                    <div>
-                        <button onclick="changeMonth(-1)" class="btn-sm" style="width:30px;">❮</button>
-                        <span id="calMonthYear" style="font-size:14px; font-weight:bold; margin: 0 8px;"></span>
-                        <button onclick="changeMonth(1)" class="btn-sm" style="width:30px;">❯</button>
-                    </div>
-                </div>
-                <div class="calendar-grid" id="calDaysName"></div>
-                <div class="calendar-grid" id="calGrid" style="margin-top: 5px;"></div>
+        <div class="form-row">
+            <div class="form-group" style="flex:1;">
+                <label>หมวดหมู่</label>
+                <select id="medCategory">
+                    <option>💊 แคปซูล</option>
+                    <option>⚪ ยาเม็ด</option>
+                    <option>🥤 ผงละลายน้ำ</option>
+                    <option>💧 ยาหยอด</option>
+                </select>
             </div>
-
-            <!-- Saved List Card -->
-            <div class="card">
-                <h2 id="t-listHeader">รายการยาที่ต้องรับประทาน</h2>
-                <div id="medicineList"></div>
+            <div class="form-group" style="flex:1;">
+                <label>เวลาทาน</label>
+                <select id="medMeal">
+                    <option>หลังอาหาร</option>
+                    <option>ก่อนอาหาร</option>
+                    <option>ก่อนนอน</option>
+                </select>
             </div>
         </div>
+        <div class="form-group">
+            <label>เวลาที่ต้องการให้เตือน</label>
+            <input type="time" id="medTime">
+        </div>
+        <button onclick="addMedication()">ตั้งเวลาเตือนทานยา</button>
     </div>
-</div>
 
-<!-- Modal Persistent Alarm (แจ้งเตือนแบบวนซ้ำไม่หยุดจนกว่าจะกดทาน) -->
-<div class="modal-overlay" id="alarmModal">
-    <div class="modal-box alarm-box">
-        <div style="font-size: 60px;" id="alarmPet">🐱</div>
-        <h2 style="color: var(--danger); border:none;" id="t-alarmTitle">⏰ ได้เวลาทานยาแล้ว!</h2>
-        <p id="alarmDetails" style="font-size: 15px; font-weight: bold; margin: 15px 0; color: #2d3748; line-height: 1.6; white-space: pre-line;"></p>
-        <button onclick="stopAlarm()" style="background: var(--success); font-size: 16px;">ตกลง / ทานยาเรียบร้อยแล้ว</button>
-    </div>
-</div>
-
-<!-- Modal Calendar Logs Check-in -->
-<div class="modal-overlay" id="logModal">
-    <div class="modal-box">
-        <h3 id="logDateTitle" style="margin-top:0; color: var(--primary);"></h3>
-        <div id="logContent" style="text-align: left; margin: 15px 0; max-height: 250px; overflow-y: auto;"></div>
-        <button onclick="closeLogModal()" class="btn-cancel">ปิดหน้าต่าง</button>
+    <div class="card">
+        <h2>รายการยาที่ตั้งไว้</h2>
+        <div id="medList"></div>
     </div>
 </div>
 
 <script>
-    let medicines = JSON.parse(localStorage.getItem('medi_items')) || [];
-    let logs = JSON.parse(localStorage.getItem('medi_logs')) || {};
-    let currentLang = 'th';
-    let alarmInterval = null;
-    let audioCtx = null;
-    let activeAlarmMed = null;
-    let calDate = new Date();
+    let swRegistration = null;
+    let meds = JSON.parse(localStorage.getItem('pwa_meds')) || [];
 
-    const dict = {
-        th: {
-            profileHeader: "ข้อมูลผู้ใช้ & คู่หูดูแลสุขภาพ", genderLabel: "เพศ", ageLabel: "ช่วงวัย",
-            formAdd: "เพิ่มรายการยาใหม่", formEdit: "แก้ไขรายการยา",
-            medName: "ชื่อยา", medDose: "ขนาดยา (เช่น mg, ml)", medAmount: "จำนวนที่ต้องทาน/ใช้ ต่อครั้ง", medCategory: "รูปแบบยา / หมวดหมู่", medMeal: "ช่วงเวลาทานยา",
-            startDate: "วันเริ่มต้น", endDate: "วันสิ้นสุด", medTime: "เวลาแจ้งเตือน",
-            saveBtn: "บันทึกข้อมูลยา", cancelBtn: "ยกเลิก", listHeader: "รายการยาที่ต้องรับประทาน", calHeader: "ตารางบันทึกการทานยา",
-            alarmTitle: "🚨 ได้เวลาทานยาแล้วนะ!", petTalk: "อย่าลืมทานยาให้ตรงเวลานะครับ!",
-            days: ['อา', 'จ', 'อ', 'พ', 'พฤ', 'ศ', 'ส']
-        },
-        en: {
-            profileHeader: "User Profile & Health Companion", genderLabel: "Gender", ageLabel: "Age Group",
-            formAdd: "Add New Medication", formEdit: "Edit Medication",
-            medName: "Medicine Name", medDose: "Dose (e.g. mg, ml)", medAmount: "Amount per Take", medCategory: "Form Factor / Category", medMeal: "Meal Timing",
-            startDate: "Start Date", endDate: "End Date", medTime: "Reminder Time",
-            saveBtn: "Save Medication", cancelBtn: "Cancel", listHeader: "Scheduled Medications", calHeader: "Medication Calendar",
-            alarmTitle: "🚨 Time to take your medicine!", petTalk: "Don't forget to take your medicine on time!",
-            days: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-        }
-    };
-
-    // ขออนุญาตส่ง Web Notification
-    if ('Notification' in window && Notification.permission !== 'granted') {
-        Notification.requestPermission();
-    }
-
-    // ลงทะเบียน Service Worker รองรับ PWA & Notification
+    // ลงทะเบียน Service Worker
     if ('serviceWorker' in navigator) {
-        const swCode = `
-            self.addEventListener('install', e => self.skipWaiting());
-            self.addEventListener('activate', e => self.clients.claim());
-            self.addEventListener('push', e => {
-                const data = e.data ? e.data.json() : { title: 'MediBuddy', body: 'ถึงเวลาทานยาแล้ว!' };
-                e.waitUntil(self.registration.showNotification(data.title, { body: data.body, icon: 'https://cdn-icons-png.flaticon.com/512/883/883407.png' }));
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('sw.js')
+                .then(reg => {
+                    swRegistration = reg;
+                    console.log('Service Worker Registered!');
+                })
+                .catch(err => console.error('SW Registration Failed:', err));
+        });
+    }
+
+    function requestNotificationPermission() {
+        if ('Notification' in window) {
+            Notification.requestPermission().then(permission => {
+                if (permission === 'granted') {
+                    alert('เปิดการแจ้งเตือนเรียบร้อยแล้ว!');
+                } else {
+                    alert('คุณปฏิเสธการแจ้งเตือน ระบบจะไม่สามารถเตือนได้');
+                }
             });
-        `;
-        const blob = new Blob([swCode], { type: 'application/javascript' });
-        navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(() => {});
-    }
-
-    function changeLang() {
-        currentLang = document.getElementById('langSelect').value;
-        const t = dict[currentLang];
-        document.getElementById('t-profileHeader').innerText = t.profileHeader;
-        document.getElementById('t-genderLabel').innerText = t.genderLabel;
-        document.getElementById('t-ageLabel').innerText = t.ageLabel;
-        document.getElementById('t-medName').innerText = t.medName;
-        document.getElementById('t-medDose').innerText = t.medDose;
-        document.getElementById('t-medAmount').innerText = t.medAmount;
-        document.getElementById('t-medCategory').innerText = t.medCategory;
-        document.getElementById('t-medMeal').innerText = t.medMeal;
-        document.getElementById('t-startDate').innerText = t.startDate;
-        document.getElementById('t-endDate').innerText = t.endDate;
-        document.getElementById('t-medTime').innerText = t.medTime;
-        document.getElementById('t-listHeader').innerText = t.listHeader;
-        document.getElementById('t-calHeader').innerText = t.calHeader;
-        document.getElementById('t-alarmTitle').innerText = t.alarmTitle;
-        document.getElementById('petTalk').innerText = t.petTalk;
-       
-        if(!document.getElementById('editId').value) {
-            document.getElementById('formTitle').innerText = t.formAdd;
-            document.getElementById('btnSave').innerText = t.saveBtn;
         }
-        renderList();
-        renderCalendar();
     }
 
-    function updatePet() {
-        const pet = document.getElementById('petSelect').value;
-        document.getElementById('petDisplay').innerText = pet;
-        document.getElementById('alarmPet').innerText = pet;
-    }
-
-    function saveMedicine() {
-        const name = document.getElementById('medName').value.trim();
-        const dose = document.getElementById('medDose').value.trim();
+    function addMedication() {
+        const name = document.getElementById('medName').value;
+        const dose = document.getElementById('medDose').value;
         const amount = document.getElementById('medAmount').value;
         const category = document.getElementById('medCategory').value;
         const meal = document.getElementById('medMeal').value;
-        const start = document.getElementById('startDate').value;
-        const end = document.getElementById('endDate').value;
         const time = document.getElementById('medTime').value;
-        const editId = document.getElementById('editId').value;
 
-        if(!name || !dose || !amount || !time || !start || !end) {
-            alert(currentLang === 'th' ? "กรุณากรอกข้อมูลให้ครบถ้วนทุกช่อง" : "Please fill in all fields.");
+        if (!name || !time) {
+            alert('กรุณากรอกชื่อยาและเวลาเตือน');
             return;
         }
 
-        if(editId) {
-            medicines = medicines.map(m => m.id == editId ? { id: m.id, name, dose, amount, category, meal, start, end, time } : m);
-        } else {
-            medicines.push({ id: Date.now(), name, dose, amount, category, meal, start, end, time });
+        const med = { id: Date.now(), name, dose, amount, category, meal, time };
+        meds.push(med);
+        localStorage.setItem('pwa_meds', JSON.stringify(meds));
+
+        scheduleServiceWorkerNotification(med);
+        renderMeds();
+        alert('บันทึกและตั้งระบบแจ้งเตือนเรียบร้อย!');
+    }
+
+    function scheduleServiceWorkerNotification(med) {
+        if (!swRegistration || !swRegistration.active) return;
+
+        const [hours, minutes] = med.time.split(':');
+        const now = new Date();
+        const scheduledTime = new Date();
+        scheduledTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+
+        // ถ้าเวลาผ่านไปแล้วในวันนี้ ให้ตั้งเตือนในวันถัดไป
+        if (scheduledTime <= now) {
+            scheduledTime.setDate(scheduledTime.getDate() + 1);
         }
 
-        localStorage.setItem('medi_items', JSON.stringify(medicines));
-        resetForm();
-        renderList();
-        renderCalendar();
+        const delay = scheduledTime.getTime() - now.getTime();
+
+        // ส่งข้อมูลไปยัง Service Worker ในเบื้องหลัง
+        swRegistration.active.postMessage({
+            type: 'SCHEDULE_NOTIFICATION',
+            title: `⏰ ได้เวลาทานยา: ${med.name}`,
+            body: `ขนาดยา: ${med.dose} (${med.amount} เม็ด/ชิ้น) - ช่วงเวลา: ${med.meal}`,
+            delay: delay
+        });
     }
 
-    function editMed(id) {
-        const item = medicines.find(m => m.id === id);
-        if(!item) return;
-        document.getElementById('editId').value = item.id;
-        document.getElementById('medName').value = item.name;
-        document.getElementById('medDose').value = item.dose;
-        document.getElementById('medAmount').value = item.amount;
-        document.getElementById('medCategory').value = item.category;
-        document.getElementById('medMeal').value = item.meal || "หลังอาหาร (After Meals)";
-        document.getElementById('startDate').value = item.start;
-        document.getElementById('endDate').value = item.end;
-        document.getElementById('medTime').value = item.time;
-
-        document.getElementById('formTitle').innerText = dict[currentLang].formEdit;
-        document.getElementById('btnSave').innerText = dict[currentLang].saveBtn;
-        document.getElementById('btnCancel').style.display = "block";
-    }
-
-    function deleteMed(id) {
-        if(confirm(currentLang === 'th' ? "ยืนยันการลบรายการนี้?" : "Are you sure you want to delete?")) {
-            medicines = medicines.filter(m => m.id !== id);
-            localStorage.setItem('medi_items', JSON.stringify(medicines));
-            renderList();
-            renderCalendar();
-        }
-    }
-
-    function resetForm() {
-        document.getElementById('editId').value = "";
-        document.getElementById('medName').value = "";
-        document.getElementById('medDose').value = "";
-        document.getElementById('medAmount').value = "";
-        document.getElementById('startDate').value = "";
-        document.getElementById('endDate').value = "";
-        document.getElementById('medTime').value = "";
-        document.getElementById('formTitle').innerText = dict[currentLang].formAdd;
-        document.getElementById('btnSave').innerText = dict[currentLang].saveBtn;
-        document.getElementById('btnCancel').style.display = "none";
-    }
-
-    function renderList() {
-        const container = document.getElementById('medicineList');
-        container.innerHTML = "";
-
-        if(medicines.length === 0) {
-            container.innerHTML = `<p style="text-align:center; color:#a0aec0;">${currentLang === 'th' ? 'ไม่มีรายการยาในระบบ' : 'No medications found.'}</p>`;
-            return;
-        }
-
-        medicines.forEach(m => {
-            container.innerHTML += `
+    function renderMeds() {
+        const list = document.getElementById('medList');
+        list.innerHTML = '';
+        meds.forEach(m => {
+            list.innerHTML += `
                 <div class="med-card">
-                    <div class="med-info">
-                        <h4>${m.name} (${m.dose})</h4>
-                        <p><strong>หมวดหมู่:</strong> ${m.category} | <strong>ทานครั้งละ:</strong> ${m.amount}</p>
-                        <p>📌 <strong>เวลาทาน:</strong> ${m.meal || 'หลังอาหาร'}</p>
-                        <p>📅 ${m.start} ถึง ${m.end} | ⏰ <strong>${m.time} น.</strong></p>
-                    </div>
-                    <div class="med-actions">
-                        <button class="btn-sm btn-edit" onclick="editMed(${m.id})">✏️</button>
-                        <button class="btn-sm btn-delete" onclick="deleteMed(${m.id})">🗑️</button>
+                    <div>
+                        <strong>${m.name} ${m.dose}</strong><br>
+                        <small>${m.category} | ${m.amount} ชิ้น | ${m.meal}</small><br>
+                        <span style="color:var(--accent); font-weight:bold;">⏰ เตือนเวลา: ${m.time} น.</span>
                     </div>
                 </div>
             `;
         });
     }
 
-    function renderCalendar() {
-        const year = calDate.getFullYear();
-        const month = calDate.getMonth();
-       
-        document.getElementById('calMonthYear').innerText = calDate.toLocaleDateString(currentLang === 'th' ? 'th-TH' : 'en-US', { month: 'long', year: 'numeric' });
-
-        const daysNameContainer = document.getElementById('calDaysName');
-        daysNameContainer.innerHTML = dict[currentLang].days.map(d => `<div class="cal-day-name">${d}</div>`).join('');
-
-        const firstDay = new Date(year, month, 1).getDay();
-        const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-        const grid = document.getElementById('calGrid');
-        grid.innerHTML = "";
-
-        for(let i = 0; i < firstDay; i++) {
-            grid.innerHTML += `<div></div>`;
-        }
-
-        const todayStr = new Date().toISOString().split('T')[0];
-
-        for(let d = 1; d <= daysInMonth; d++) {
-            const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-            const isToday = dateStr === todayStr ? 'today' : '';
-           
-            const hasMeds = medicines.some(m => dateStr >= m.start && dateStr <= m.end);
-            const hasLogs = logs[dateStr] && Object.keys(logs[dateStr]).length > 0;
-
-            grid.innerHTML += `
-                <div class="cal-date ${isToday}" onclick="openLogModal('${dateStr}')">
-                    <span>${d}</span>
-                    <div>${hasLogs ? '<span class="cal-dot"></span>' : (hasMeds ? '<span style="font-size:10px; color:#cbd5e0;">💊</span>' : '')}</div>
-                </div>
-            `;
-        }
-    }
-
-    function changeMonth(offset) {
-        calDate.setMonth(calDate.getMonth() + offset);
-        renderCalendar();
-    }
-
-    function openLogModal(dateStr) {
-        document.getElementById('logDateTitle').innerText = `📅 ${dateStr}`;
-        const content = document.getElementById('logContent');
-        content.innerHTML = "";
-
-        const scheduledMeds = medicines.filter(m => dateStr >= m.start && dateStr <= m.end);
-
-        if(scheduledMeds.length === 0) {
-            content.innerHTML = `<p style="color:#718096; text-align:center;">${currentLang === 'th' ? 'ไม่มีรายการยาที่ต้องทานในวันนี้' : 'No scheduled medicines for this date.'}</p>`;
-        } else {
-            scheduledMeds.forEach(m => {
-                const isTaken = logs[dateStr] && logs[dateStr][m.id];
-                content.innerHTML += `
-                    <div style="margin-bottom:10px; padding:10px; border:1px solid var(--border); border-radius:8px; display:flex; justify-content:space-between; align-items:center;">
-                        <div>
-                            <strong>${m.name}</strong> (${m.dose})<br>
-                            <small>${m.amount} [${m.meal || 'หลังอาหาร'}] - ⏰ ${m.time} น.</small>
-                        </div>
-                        <input type="checkbox" ${isTaken ? 'checked' : ''} onchange="toggleMedLog('${dateStr}', ${m.id}, this.checked)" style="width:20px; height:20px; cursor:pointer;">
-                    </div>
-                `;
-            });
-        }
-
-        document.getElementById('logModal').style.display = "flex";
-    }
-
-    function toggleMedLog(dateStr, medId, isChecked) {
-        if(!logs[dateStr]) logs[dateStr] = {};
-        if(isChecked) {
-            logs[dateStr][medId] = true;
-        } else {
-            delete logs[dateStr][medId];
-        }
-        localStorage.setItem('medi_logs', JSON.stringify(logs));
-        renderCalendar();
-    }
-
-    function closeLogModal() {
-        document.getElementById('logModal').style.display = "none";
-    }
-
-    /* ระบบเสียงแจ้งเตือนและสั่นแบบตื๊อวนซ้ำ */
-    function playBeepSound() {
-        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = "square";
-        osc.frequency.value = 880;
-        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start();
-        osc.stop(audioCtx.currentTime + 0.3);
-
-        if (navigator.vibrate) {
-            navigator.vibrate([200, 100, 200]);
-        }
-    }
-
-    function triggerAlarm(med) {
-        activeAlarmMed = med;
-        document.getElementById('alarmDetails').innerText = `💊 ยา: ${med.name} (${med.dose})\n📌 จำนวน: ${med.amount} [${med.meal || 'หลังอาหาร'}]\n⏰ เวลา: ${med.time} น.`;
-        document.getElementById('alarmModal').style.display = "flex";
-
-        if ("Notification" in window && Notification.permission === "granted") {
-            new Notification("🚨 ถึงเวลาทานยาแล้ว!", {
-                body: `ได้เวลาทานยา ${med.name} (${med.dose}) จำนวน ${med.amount}`,
-                icon: "https://cdn-icons-png.flaticon.com/512/883/883407.png"
-            });
-        }
-
-        // วนส่งเสียงเตือนทุกๆ 1 วินาที ไม่หยุดจนกว่าจะมากดปุ่มยอมรับ
-        if(!alarmInterval) {
-            alarmInterval = setInterval(() => {
-                playBeepSound();
-            }, 1000);
-        }
-    }
-
-    function stopAlarm() {
-        document.getElementById('alarmModal').style.display = "none";
-        if(alarmInterval) {
-            clearInterval(alarmInterval);
-            alarmInterval = null;
-        }
-
-        if(activeAlarmMed) {
-            const todayStr = new Date().toISOString().split('T')[0];
-            toggleMedLog(todayStr, activeAlarmMed.id, true);
-            activeAlarmMed = null;
-        }
-    }
-
-    // ตรวจสอบเวลาทุกๆ 1 วินาที
-    setInterval(() => {
-        const now = new Date();
-        const year = now.getFullYear();
-        const month = String(now.getMonth() + 1).padStart(2, '0');
-        const day = String(now.getDate()).padStart(2, '0');
-        const todayStr = `${year}-${month}-${day}`;
-       
-        const hours = String(now.getHours()).padStart(2, '0');
-        const mins = String(now.getMinutes()).padStart(2, '0');
-        const secs = String(now.getSeconds()).padStart(2, '0');
-        const timeStr = `${hours}:${mins}`;
-
-        if(secs === "00") {
-            medicines.forEach(m => {
-                if(todayStr >= m.start && todayStr <= m.end && m.time === timeStr) {
-                    triggerAlarm(m);
-                }
-            });
-        }
-    }, 1000);
-
-    renderList();
-    renderCalendar();
+    renderMeds();
 </script>
 </body>
 </html>
-// sw.js - Service Worker รับหน้าที่สั่งแจ้งเตือนเมื่อถึงเวลา
-self.addEventListener('install', (event) => {
-    ข้ามการรอคอยด้วยตนเอง();
-});
-
-self.addEventListener('activate', (event) => {
-    event.waitUntil(self.clients.claim());
-});
-
-// รับข้อความจากศูนย์กลางหลักเพื่อตั้งเวลาเตือนหรือสั่งเตือนทันที
-self.addEventListener('message', (event) => {
-    ถ้า (event.data และ event.data.type เท่ากับ 'SCHEDULE_NOTIFICATION') {
-        const { title, body, delay } = event.data;
-       
-        // ตั้งเวลาฉากหลัง
-        setTimeout(() => {
-            การลงทะเบียนด้วยตนเองแสดงการแจ้งเตือน (ชื่อเรื่อง, {
-                ร่างกาย: ร่างกาย
-                ไอคอน: 'https://cdn-icons-png.flaticon.com/512/883/883407.png'
-                ตราสัญลักษณ์: 'https://cdn-icons-png.flaticon.com/512/883/883407.png'
-                สั่น: [500, 110, 500, 110, 450, 110, 200, 110, 170, 40, 450, 110, 200, 110]
-                แท็ก: 'med-alarm-' + Date.now()
-                แจ้งเตือนใหม่: จริง
-                needInteraction: true, // ค้างล่าสุดไว้จนกว่าผู้ใช้จะกดปิด
-                ข้อมูล: { url: self.location.origin }
-            });
-        }, ล่าช้า);
-    }
-});
-
-// ผู้ใช้กดที่เตือนไม่ให้เปิดการแจ้งเตือน
-self.addEventListener('notificationclick', (event) => {
-    เหตุการณ์.การแจ้งเตือน.ปิด();
-    เหตุการณ์.รอจนกว่า(
-        clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
-            ถ้า (clientList.length > 0) {
-                ส่งคืน clientList[0].focus();
-            }
-            ส่งคืน client.openWindow('/');
-        })
-    );
-});
