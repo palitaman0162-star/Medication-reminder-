@@ -33,21 +33,22 @@
         .logo-area { display: flex; align-items: center; gap: 12px; }
         .logo-area h1 { margin: 0; font-size: 22px; color: var(--primary); font-weight: 700; }
 
-        /* แถบคำเตือนสีแดงตามที่ขอ */
+        /* แถบคำเตือนสีแดง */
         .warning-banner {
             background-color: var(--danger);
             color: white;
             font-weight: 600;
             font-size: 14px;
             text-align: center;
-            padding: 10px 15px;
+            padding: 12px 15px;
             border-radius: 12px;
             margin-bottom: 20px;
             box-shadow: 0 3px 10px rgba(239, 68, 68, 0.25);
+            line-height: 1.5;
             animation: pulseBanner 2s infinite alternate;
         }
         @keyframes pulseBanner {
-            from { opacity: 0.9; }
+            from { opacity: 0.92; }
             to { opacity: 1; transform: scale(1.005); }
         }
 
@@ -140,7 +141,8 @@
             <h1>Dee - Dose</h1>
         </div>
         <div style="display:flex; gap:10px; align-items:center;">
-            <button onclick="requestNotificationPermission()" style="width:auto; padding:6px 12px; font-size:12px; background:var(--accent);">🔔 เปิดการแจ้งเตือน</button>
+            <!-- ปุ่มส้มเปิดแจ้งเตือน -->
+            <button onclick="requestNotificationPermission()" style="width:auto; padding:8px 14px; font-size:13px; background:var(--accent);">🔔 เปิดการแจ้งเตือน</button>
             <select id="langSelect" onchange="changeLang()" style="width: auto; padding: 6px 12px;">
                 <option value="th">🇹🇭 ไทย</option>
                 <option value="en">🇬🇧 English</option>
@@ -148,9 +150,10 @@
         </div>
     </header>
 
-    <!-- แถบคำเตือนสีแดง -->
+    <!-- แถบคำเตือนสีแดง + หมายเหตุ -->
     <div class="warning-banner">
-        ⚠️ คำเตือน : กรณีถ้าปัดแอพทิ้งการแจ้งเตือนที่ตั้งไว้ในเว็บจะไม่แจ้งเตือน !!!
+        ⚠️ คำเตือน : กรณีถ้าปัดแอพทิ้งการแจ้งเตือนที่ตั้งไว้ในเว็บจะไม่แจ้งเตือน !!!<br>
+        <span style="font-weight: 400; font-size: 13px;">📌 หมายเหตุ : กดเปิดการแจ้งเตือนปุ่มสีส้มตรงหน้าเว็บด้วย 📳📳</span>
     </div>
 
     <div class="app-grid">
@@ -351,7 +354,7 @@
         }
     };
 
-    // ระบบบันทึกประวัติการเข้าใช้งาน (Access Tracking)
+    // บันทึกประวัติการเข้าใช้งาน
     function trackUserAccess() {
         let accessLogs = JSON.parse(localStorage.getItem('deedose_access_history')) || [];
         const now = new Date();
@@ -384,8 +387,12 @@
             Notification.requestPermission().then(permission => {
                 if (permission === 'granted') {
                     alert('เปิดการแจ้งเตือน Dee - Dose เรียบร้อยแล้ว!');
+                } else {
+                    alert('โปรดอนุญาตการแจ้งเตือนในเบราว์เซอร์ของคุณ');
                 }
             });
+        } else {
+            alert('เบราว์เซอร์นี้ไม่รองรับการแจ้งเตือนแบบ Push');
         }
     }
 
