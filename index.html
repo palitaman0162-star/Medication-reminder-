@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MediBuddy - แจ้งเตือนการทานยา</title>
+    <title>Dee - Dose - ระบบแจ้งเตือนการทานยา</title>
     <link rel="manifest" href="manifest.json">
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -21,35 +21,35 @@
         * { box-sizing: border-box; font-family: 'Prompt', sans-serif; }
         body { background-color: var(--bg); color: var(--text); margin: 0; padding: 15px; }
         .container { max-width: 600px; margin: 0 auto; }
-        header {
-            display: flex; justify-content: space-between; align-items: center;
+        header { 
+            display: flex; justify-content: space-between; align-items: center; 
             background: var(--card-bg); padding: 15px 20px; border-radius: 16px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 15px;
             border-bottom: 4px solid var(--primary-light);
         }
-        h1 { margin: 0; font-size: 20px; color: var(--primary); }
-        .card {
-            background: var(--card-bg); border-radius: 16px; padding: 18px;
+        h1 { margin: 0; font-size: 22px; color: var(--primary); font-weight: 700; }
+        .card { 
+            background: var(--card-bg); border-radius: 16px; padding: 18px; 
             box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 15px; border: 1px solid var(--border);
         }
         .form-group { margin-bottom: 10px; }
         label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px; color: var(--primary); }
-        input, select {
-            width: 100%; padding: 10px; border: 1.5px solid var(--border);
+        input, select { 
+            width: 100%; padding: 10px; border: 1.5px solid var(--border); 
             border-radius: 10px; font-size: 14px; outline: none; background: #fff;
         }
         .form-row { display: flex; gap: 8px; }
-        button {
-            width: 100%; padding: 12px; border: none; border-radius: 10px;
-            background: var(--primary-light); color: white; font-size: 15px; font-weight: 600;
+        button { 
+            width: 100%; padding: 12px; border: none; border-radius: 10px; 
+            background: var(--primary-light); color: white; font-size: 15px; font-weight: 600; 
             cursor: pointer; margin-top: 5px;
         }
         .notice-box {
             background: #fff5f5; border: 1px solid #feb2b2; padding: 10px; border-radius: 10px;
             font-size: 12px; color: #c53030; margin-bottom: 15px; line-height: 1.4;
         }
-        .med-card {
-            border: 1px solid var(--border); border-radius: 12px; padding: 12px;
+        .med-card { 
+            border: 1px solid var(--border); border-radius: 12px; padding: 12px; 
             margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;
             background: #fff; border-left: 4px solid var(--primary-light);
         }
@@ -59,7 +59,7 @@
 
 <div class="container">
     <header>
-        <h1>🏥 MediBuddy PWA</h1>
+        <h1>🏥 Dee - Dose</h1>
         <button onclick="requestNotificationPermission()" style="width:auto; padding:6px 12px; font-size:12px; background:var(--accent);">🔔 เปิดการแจ้งเตือน</button>
     </header>
 
@@ -119,7 +119,7 @@
 
 <script>
     let swRegistration = null;
-    let meds = JSON.parse(localStorage.getItem('pwa_meds')) || [];
+    let meds = JSON.parse(localStorage.getItem('deedose_meds')) || [];
 
     // ลงทะเบียน Service Worker
     if ('serviceWorker' in navigator) {
@@ -137,7 +137,7 @@
         if ('Notification' in window) {
             Notification.requestPermission().then(permission => {
                 if (permission === 'granted') {
-                    alert('เปิดการแจ้งเตือนเรียบร้อยแล้ว!');
+                    alert('เปิดการแจ้งเตือน Dee - Dose เรียบร้อยแล้ว!');
                 } else {
                     alert('คุณปฏิเสธการแจ้งเตือน ระบบจะไม่สามารถเตือนได้');
                 }
@@ -160,11 +160,11 @@
 
         const med = { id: Date.now(), name, dose, amount, category, meal, time };
         meds.push(med);
-        localStorage.setItem('pwa_meds', JSON.stringify(meds));
+        localStorage.setItem('deedose_meds', JSON.stringify(meds));
 
         scheduleServiceWorkerNotification(med);
         renderMeds();
-        alert('บันทึกและตั้งระบบแจ้งเตือนเรียบร้อย!');
+        alert('บันทึกและตั้งระบบแจ้งเตือน Dee - Dose เรียบร้อย!');
     }
 
     function scheduleServiceWorkerNotification(med) {
@@ -175,17 +175,15 @@
         const scheduledTime = new Date();
         scheduledTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
 
-        // ถ้าเวลาผ่านไปแล้วในวันนี้ ให้ตั้งเตือนในวันถัดไป
         if (scheduledTime <= now) {
             scheduledTime.setDate(scheduledTime.getDate() + 1);
         }
 
         const delay = scheduledTime.getTime() - now.getTime();
 
-        // ส่งข้อมูลไปยัง Service Worker ในเบื้องหลัง
         swRegistration.active.postMessage({
             type: 'SCHEDULE_NOTIFICATION',
-            title: `⏰ ได้เวลาทานยา: ${med.name}`,
+            title: `⏰ Dee - Dose ได้เวลาทานยา: ${med.name}`,
             body: `ขนาดยา: ${med.dose} (${med.amount} เม็ด/ชิ้น) - ช่วงเวลา: ${med.meal}`,
             delay: delay
         });
