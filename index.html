@@ -90,7 +90,7 @@
             color: var(--primary-light); box-shadow: 0 2px 6px rgba(0,0,0,0.05); 
         }
 
-        /* Medicine Cards & Recommendations */
+        /* Medicine Cards */
         .med-card { 
             border: 1px solid var(--border); border-radius: 12px; padding: 14px; 
             margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;
@@ -102,13 +102,6 @@
         .btn-sm { width: auto; padding: 6px 10px; font-size: 12px; border-radius: 6px; }
         .btn-edit { background: var(--accent); }
         .btn-delete { background: var(--danger); }
-        .btn-use-rec { background: var(--success); margin-top: 8px; width: 100%; padding: 6px; font-size: 12px; }
-
-        .rec-card {
-            background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; padding: 12px; margin-bottom: 10px;
-        }
-        .rec-card h4 { margin: 0 0 4px 0; color: #166534; font-size: 15px; }
-        .rec-card p { margin: 2px 0; font-size: 12px; color: #15803d; }
 
         /* Calendar Styling */
         .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
@@ -164,7 +157,7 @@
     </div>
 
     <div class="app-grid">
-        <!-- Left Side: User Profile, Companion & Recommended Meds -->
+        <!-- Left Side: User Profile & Companion -->
         <div>
             <div class="card">
                 <h2 id="t-profileHeader">ข้อมูลผู้ใช้ & คู่หูดูแลสุขภาพ</h2>
@@ -199,12 +192,6 @@
                         </select>
                     </div>
                 </div>
-            </div>
-
-            <!-- RECOMMENDED MEDICINES (คำแนะนำตัวยา & สรรพคุณ) -->
-            <div class="card">
-                <h2 id="t-recHeader">💡 ยาน่ารู้ & สรรพคุณแนะนำ</h2>
-                <div id="recommendedContainer" style="max-height: 220px; overflow-y: auto;"></div>
             </div>
 
             <!-- Input Form -->
@@ -346,50 +333,9 @@
     let activeAlarmMed = null;
     let calDate = new Date();
 
-    // รายการยาแนะนำและสรรพคุณ
-    const recommendedMeds = [
-        {
-            name: "พาราสีตามอล (Paracetamol)",
-            dose: "500 mg",
-            category: "⚪ ยาเม็ด (Tablet)",
-            meal: "หลังอาหาร (After Meals)",
-            propTH: "บรรเทาอาการปวดระดับเล็กน้อยถึงปานกลาง และลดไข้",
-            propEN: "Relieves mild to moderate pain and reduces fever.",
-            warningTH: "ห้ามทานเกิน 8 เม็ด/วัน (4,000 mg) และไม่ควรทานติดต่อกันเกิน 5 วัน"
-        },
-        {
-            name: "เซทิริซีน (Cetirizine)",
-            dose: "10 mg",
-            category: "⚪ ยาเม็ด (Tablet)",
-            meal: "ก่อนนอน (Before Bed)",
-            propTH: "รักษาอาการแพ้ เช่น น้ำมูกไหล จาม ผื่นคัน คันตา",
-            propEN: "Treats allergy symptoms like runny nose, sneezing, and hives.",
-            warningTH: "อาจทำให้เกิดอาการง่วงซึม ควรระวังการขับขี่ยานพาหนะ"
-        },
-        {
-            name: "ยาธาตุน้ำขาว (Salol & Menthol Mixture)",
-            dose: "15 ml",
-            category: "🥤 ผงละลายน้ำ (Powder)",
-            meal: "หลังอาหาร (After Meals)",
-            propTH: "แก้ปวดท้อง จุกเสียด แน่นท้อง ท้องเสียถ่ายเป็นน้ำ",
-            propEN: "Relieves stomachache, flatulence, and mild diarrhea.",
-            warningTH: "เขย่าขวดก่อนทานทุกครั้ง"
-        },
-        {
-            name: "อม็อกซีซิลลิน (Amoxicillin)",
-            dose: "500 mg",
-            category: "💊 แคปซูล (Capsule)",
-            meal: "หลังอาหาร (After Meals)",
-            propTH: "ต้านเชื้อแบคทีเรีย รักษาการติดเชื้อทางเดินหายใจ/คออักเสบ",
-            propEN: "Antibiotic used to treat bacterial infections.",
-            warningTH: "ต้องทานติดต่อกันจนหมดตามแพทย์/เภสัชกรสั่ง ห้ามหยุดยาเอง"
-        }
-    ];
-
     const dict = {
         th: {
             profileHeader: "ข้อมูลผู้ใช้ & คู่หูดูแลสุขภาพ", genderLabel: "เพศ", ageLabel: "ช่วงวัย",
-            recHeader: "💡 ยาน่ารู้ & สรรพคุณแนะนำ",
             formAdd: "เพิ่มรายการยาใหม่", formEdit: "แก้ไขรายการยา",
             medName: "ชื่อยา", medDose: "ขนาดยา (เช่น 500mg, 10ml)", medAmount: "จำนวนต่อครั้ง (กี่เม็ด/กี่ชิ้น)", medCategory: "รูปแบบ / หมวดหมู่ยา", medMeal: "ช่วงเวลาทานยา",
             startDate: "วันเริ่มต้น", endDate: "วันสิ้นสุด", medTime: "เวลาแจ้งเตือน",
@@ -399,6 +345,368 @@
         },
         en: {
             profileHeader: "User Profile & Health Companion", genderLabel: "Gender", ageLabel: "Age Group",
-            recHeader: "💡 Drug Knowledge & Recommendations",
             formAdd: "Add New Medication", formEdit: "Edit Medication",
-            medName: "Medicine Name", medDose: "Dose (e.g. 500mg, 10ml)", medAmount: "Amount per Ta
+            medName: "Medicine Name", medDose: "Dose (e.g. 500mg, 10ml)", medAmount: "Amount per Take", medCategory: "Form / Category", medMeal: "Meal Timing",
+            startDate: "Start Date", endDate: "End Date", medTime: "Reminder Time",
+            saveBtn: "Save Medication", cancelBtn: "Cancel", listHeader: "Scheduled Medications", calHeader: "Medication Calendar",
+            alarmTitle: "🚨 Dee - Dose: Time to take medicine!", petTalk: "Don't forget to take your medicine on time!",
+            days: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+        }
+    };
+
+    // บันทึกประวัติการเข้าใช้งาน
+    function trackUserAccess() {
+        let accessLogs = JSON.parse(localStorage.getItem('deedose_access_history')) || [];
+        const now = new Date();
+        const dateStr = now.toLocaleString('th-TH');
+        const deviceType = /Mobi|Android/i.test(navigator.userAgent) ? '📱 มือถือ (Mobile)' : '💻 คอมพิวเตอร์ (Desktop)';
+
+        accessLogs.unshift({ time: dateStr, device: deviceType });
+        if(accessLogs.length > 15) accessLogs.pop(); 
+
+        localStorage.setItem('deedose_access_history', JSON.stringify(accessLogs));
+        renderAccessLogs();
+    }
+
+    function renderAccessLogs() {
+        const accessLogs = JSON.parse(localStorage.getItem('deedose_access_history')) || [];
+        const tbody = document.getElementById('accessLogList');
+        tbody.innerHTML = accessLogs.map(l => `<tr><td>${l.time}</td><td>${l.device}</td></tr>`).join('');
+    }
+
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('sw.js')
+                .then(reg => { swRegistration = reg; })
+                .catch(err => console.error('SW Error:', err));
+        });
+    }
+
+    function requestNotificationPermission() {
+        if ('Notification' in window) {
+            Notification.requestPermission().then(permission => {
+                if (permission === 'granted') {
+                    alert('เปิดการแจ้งเตือน Dee - Dose เรียบร้อยแล้ว!');
+                } else {
+                    alert('โปรดอนุญาตการแจ้งเตือนในเบราว์เซอร์ของคุณ');
+                }
+            });
+        } else {
+            alert('เบราว์เซอร์นี้ไม่รองรับการแจ้งเตือนแบบ Push');
+        }
+    }
+
+    document.getElementById('userGender').value = profile.gender;
+    document.getElementById('userAge').value = profile.age;
+    document.getElementById('petSelect').value = profile.pet;
+    document.getElementById('petDisplay').innerText = profile.pet;
+    document.getElementById('alarmPet').innerText = profile.pet;
+
+    function saveProfile() {
+        profile.gender = document.getElementById('userGender').value;
+        profile.age = document.getElementById('userAge').value;
+        profile.pet = document.getElementById('petSelect').value;
+        localStorage.setItem('deedose_profile', JSON.stringify(profile));
+    }
+
+    function updatePet() {
+        const pet = document.getElementById('petSelect').value;
+        document.getElementById('petDisplay').innerText = pet;
+        document.getElementById('alarmPet').innerText = pet;
+        saveProfile();
+    }
+
+    function changeLang() {
+        currentLang = document.getElementById('langSelect').value;
+        const t = dict[currentLang];
+        document.getElementById('t-profileHeader').innerText = t.profileHeader;
+        document.getElementById('t-genderLabel').innerText = t.genderLabel;
+        document.getElementById('t-ageLabel').innerText = t.ageLabel;
+        document.getElementById('t-medName').innerText = t.medName;
+        document.getElementById('t-medDose').innerText = t.medDose;
+        document.getElementById('t-medAmount').innerText = t.medAmount;
+        document.getElementById('t-medCategory').innerText = t.medCategory;
+        document.getElementById('t-medMeal').innerText = t.medMeal;
+        document.getElementById('t-startDate').innerText = t.startDate;
+        document.getElementById('t-endDate').innerText = t.endDate;
+        document.getElementById('t-medTime').innerText = t.medTime;
+        document.getElementById('t-listHeader').innerText = t.listHeader;
+        document.getElementById('t-calHeader').innerText = t.calHeader;
+        document.getElementById('t-alarmTitle').innerText = t.alarmTitle;
+        document.getElementById('petTalk').innerText = t.petTalk;
+        
+        if(!document.getElementById('editId').value) {
+            document.getElementById('formTitle').innerText = t.formAdd;
+            document.getElementById('btnSave').innerText = t.saveBtn;
+        }
+        renderList();
+        renderCalendar();
+    }
+
+    function saveMedicine() {
+        const name = document.getElementById('medName').value.trim();
+        const dose = document.getElementById('medDose').value.trim();
+        const amount = document.getElementById('medAmount').value;
+        const category = document.getElementById('medCategory').value;
+        const meal = document.getElementById('medMeal').value;
+        const start = document.getElementById('startDate').value;
+        const end = document.getElementById('endDate').value;
+        const time = document.getElementById('medTime').value;
+        const editId = document.getElementById('editId').value;
+
+        if(!name || !dose || !amount || !time || !start || !end) {
+            alert(currentLang === 'th' ? "กรุณากรอกข้อมูลให้ครบถ้วนทุกช่อง" : "Please fill in all fields.");
+            return;
+        }
+
+        const medObj = { id: editId ? Number(editId) : Date.now(), name, dose, amount, category, meal, start, end, time };
+
+        if(editId) {
+            medicines = medicines.map(m => m.id == editId ? medObj : m);
+        } else {
+            medicines.push(medObj);
+        }
+
+        localStorage.setItem('deedose_items', JSON.stringify(medicines));
+        scheduleServiceWorkerNotification(medObj);
+
+        resetForm();
+        renderList();
+        renderCalendar();
+    }
+
+    function scheduleServiceWorkerNotification(med) {
+        if (!swRegistration || !swRegistration.active) return;
+        const [hours, minutes] = med.time.split(':');
+        const now = new Date();
+        const scheduledTime = new Date();
+        scheduledTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+
+        if (scheduledTime <= now) scheduledTime.setDate(scheduledTime.getDate() + 1);
+        const delay = scheduledTime.getTime() - now.getTime();
+
+        swRegistration.active.postMessage({
+            type: 'SCHEDULE_NOTIFICATION',
+            title: `⏰ Dee - Dose ได้เวลาทานยา: ${med.name}`,
+            body: `ขนาดยา: ${med.dose} (${med.amount} ชิ้น) - ${med.meal}`,
+            delay: delay
+        });
+    }
+
+    function editMed(id) {
+        const item = medicines.find(m => m.id === id);
+        if(!item) return;
+        document.getElementById('editId').value = item.id;
+        document.getElementById('medName').value = item.name;
+        document.getElementById('medDose').value = item.dose;
+        document.getElementById('medAmount').value = item.amount;
+        document.getElementById('medCategory').value = item.category;
+        document.getElementById('medMeal').value = item.meal;
+        document.getElementById('startDate').value = item.start;
+        document.getElementById('endDate').value = item.end;
+        document.getElementById('medTime').value = item.time;
+
+        document.getElementById('formTitle').innerText = dict[currentLang].formEdit;
+        document.getElementById('btnSave').innerText = dict[currentLang].saveBtn;
+        document.getElementById('btnCancel').style.display = "block";
+    }
+
+    function deleteMed(id) {
+        if(confirm(currentLang === 'th' ? "ยืนยันการลบรายการนี้?" : "Are you sure you want to delete?")) {
+            medicines = medicines.filter(m => m.id !== id);
+            localStorage.setItem('deedose_items', JSON.stringify(medicines));
+            renderList();
+            renderCalendar();
+        }
+    }
+
+    function resetForm() {
+        document.getElementById('editId').value = "";
+        document.getElementById('medName').value = "";
+        document.getElementById('medDose').value = "";
+        document.getElementById('medAmount').value = "1";
+        document.getElementById('startDate').value = "";
+        document.getElementById('endDate').value = "";
+        document.getElementById('medTime').value = "";
+        document.getElementById('formTitle').innerText = dict[currentLang].formAdd;
+        document.getElementById('btnSave').innerText = dict[currentLang].saveBtn;
+        document.getElementById('btnCancel').style.display = "none";
+    }
+
+    function renderList() {
+        const container = document.getElementById('medicineList');
+        container.innerHTML = "";
+
+        if(medicines.length === 0) {
+            container.innerHTML = `<p style="text-align:center; color:#94a3b8; padding: 20px 0;">${currentLang === 'th' ? 'ไม่มีรายการยาในระบบ' : 'No medications found.'}</p>`;
+            return;
+        }
+
+        medicines.forEach(m => {
+            container.innerHTML += `
+                <div class="med-card">
+                    <div class="med-info">
+                        <h4>${m.name} (${m.dose})</h4>
+                        <p><strong>รูปแบบ:</strong> ${m.category} | <strong>ทานครั้งละ:</strong> ${m.amount} เม็ด/ชิ้น</p>
+                        <p>📌 <strong>ช่วงเวลา:</strong> ${m.meal}</p>
+                        <p>📅 ${m.start} ถึง ${m.end} | ⏰ <strong>${m.time} น.</strong></p>
+                    </div>
+                    <div class="med-actions">
+                        <button class="btn-sm btn-edit" onclick="editMed(${m.id})">✏️</button>
+                        <button class="btn-sm btn-delete" onclick="deleteMed(${m.id})">🗑️</button>
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    function renderCalendar() {
+        const year = calDate.getFullYear();
+        const month = calDate.getMonth();
+        
+        document.getElementById('calMonthYear').innerText = calDate.toLocaleDateString(currentLang === 'th' ? 'th-TH' : 'en-US', { month: 'long', year: 'numeric' });
+
+        const daysNameContainer = document.getElementById('calDaysName');
+        daysNameContainer.innerHTML = dict[currentLang].days.map(d => `<div class="cal-day-name">${d}</div>`).join('');
+
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+        const grid = document.getElementById('calGrid');
+        grid.innerHTML = "";
+
+        for(let i = 0; i < firstDay; i++) {
+            grid.innerHTML += `<div></div>`;
+        }
+
+        const todayStr = new Date().toISOString().split('T')[0];
+
+        for(let d = 1; d <= daysInMonth; d++) {
+            const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+            const isToday = dateStr === todayStr ? 'today' : '';
+            
+            const hasMeds = medicines.some(m => dateStr >= m.start && dateStr <= m.end);
+            const hasLogs = logs[dateStr] && Object.keys(logs[dateStr]).length > 0;
+
+            grid.innerHTML += `
+                <div class="cal-date ${isToday}" onclick="openLogModal('${dateStr}')">
+                    <span>${d}</span>
+                    <div>${hasLogs ? '<span class="cal-dot"></span>' : (hasMeds ? '<span style="font-size:10px; color:#94a3b8;">💊</span>' : '')}</div>
+                </div>
+            `;
+        }
+    }
+
+    function changeMonth(offset) {
+        calDate.setMonth(calDate.getMonth() + offset);
+        renderCalendar();
+    }
+
+    function openLogModal(dateStr) {
+        document.getElementById('logDateTitle').innerText = `📅 ${dateStr}`;
+        const content = document.getElementById('logContent');
+        content.innerHTML = "";
+
+        const scheduledMeds = medicines.filter(m => dateStr >= m.start && dateStr <= m.end);
+
+        if(scheduledMeds.length === 0) {
+            content.innerHTML = `<p style="color:#64748b; text-align:center;">${currentLang === 'th' ? 'ไม่มีรายการยาที่ต้องทานในวันนี้' : 'No scheduled medicines for this date.'}</p>`;
+        } else {
+            scheduledMeds.forEach(m => {
+                const isTaken = logs[dateStr] && logs[dateStr][m.id];
+                content.innerHTML += `
+                    <div style="margin-bottom:10px; padding:10px; border:1px solid var(--border); border-radius:8px; display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <strong>${m.name}</strong> (${m.dose})<br>
+                            <small>${m.amount} เม็ด/ชิ้น [${m.meal}] - ⏰ ${m.time} น.</small>
+                        </div>
+                        <input type="checkbox" ${isTaken ? 'checked' : ''} onchange="toggleMedLog('${dateStr}', ${m.id}, this.checked)" style="width:20px; height:20px; cursor:pointer;">
+                    </div>
+                `;
+            });
+        }
+
+        document.getElementById('logModal').style.display = "flex";
+    }
+
+    function toggleMedLog(dateStr, medId, isChecked) {
+        if(!logs[dateStr]) logs[dateStr] = {};
+        if(isChecked) {
+            logs[dateStr][medId] = true;
+        } else {
+            delete logs[dateStr][medId];
+        }
+        localStorage.setItem('deedose_logs', JSON.stringify(logs));
+        renderCalendar();
+    }
+
+    function closeLogModal() {
+        document.getElementById('logModal').style.display = "none";
+    }
+
+    function playBeepSound() {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = "square";
+        osc.frequency.value = 880;
+        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.3);
+
+        if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+    }
+
+    function triggerAlarm(med) {
+        activeAlarmMed = med;
+        document.getElementById('alarmDetails').innerText = `💊 ยา: ${med.name} (${med.dose})\n📌 จำนวน: ${med.amount} เม็ด/ชิ้น [${med.meal}]\n⏰ เวลา: ${med.time} น.`;
+        document.getElementById('alarmModal').style.display = "flex";
+
+        if(!alarmInterval) {
+            alarmInterval = setInterval(() => { playBeepSound(); }, 1000);
+        }
+    }
+
+    function stopAlarm() {
+        document.getElementById('alarmModal').style.display = "none";
+        if(alarmInterval) {
+            clearInterval(alarmInterval);
+            alarmInterval = null;
+        }
+
+        if(activeAlarmMed) {
+            const todayStr = new Date().toISOString().split('T')[0];
+            toggleMedLog(todayStr, activeAlarmMed.id, true);
+            activeAlarmMed = null;
+        }
+    }
+
+    setInterval(() => {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const todayStr = `${year}-${month}-${day}`;
+        
+        const hours = String(now.getHours()).padStart(2, '0');
+        const mins = String(now.getMinutes()).padStart(2, '0');
+        const secs = String(now.getSeconds()).padStart(2, '0');
+        const timeStr = `${hours}:${mins}`;
+
+        if(secs === "00") {
+            medicines.forEach(m => {
+                if(todayStr >= m.start && todayStr <= m.end && m.time === timeStr) {
+                    triggerAlarm(m);
+                }
+            });
+        }
+    }, 1000);
+
+    trackUserAccess();
+    renderList();
+    renderCalendar();
+</script>
+</body>
+</html>
