@@ -27,11 +27,29 @@
         header { 
             display: flex; justify-content: space-between; align-items: center; 
             background: var(--card-bg); padding: 15px 25px; border-radius: 16px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 12px;
             border-bottom: 4px solid var(--primary-light);
         }
         .logo-area { display: flex; align-items: center; gap: 12px; }
         .logo-area h1 { margin: 0; font-size: 22px; color: var(--primary); font-weight: 700; }
+
+        /* แถบคำเตือนสีแดงตามที่ขอ */
+        .warning-banner {
+            background-color: var(--danger);
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            text-align: center;
+            padding: 10px 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 3px 10px rgba(239, 68, 68, 0.25);
+            animation: pulseBanner 2s infinite alternate;
+        }
+        @keyframes pulseBanner {
+            from { opacity: 0.9; }
+            to { opacity: 1; transform: scale(1.005); }
+        }
 
         .app-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 20px; }
         @media (max-width: 900px) { .app-grid { grid-template-columns: 1fr; } }
@@ -129,6 +147,11 @@
             </select>
         </div>
     </header>
+
+    <!-- แถบคำเตือนสีแดง -->
+    <div class="warning-banner">
+        ⚠️ คำเตือน : กรณีถ้าปัดแอพทิ้งการแจ้งเตือนที่ตั้งไว้ในเว็บจะไม่แจ้งเตือน !!!
+    </div>
 
     <div class="app-grid">
         <!-- Left Side: User Profile & Companion -->
@@ -336,7 +359,7 @@
         const deviceType = /Mobi|Android/i.test(navigator.userAgent) ? '📱 มือถือ (Mobile)' : '💻 คอมพิวเตอร์ (Desktop)';
 
         accessLogs.unshift({ time: dateStr, device: deviceType });
-        if(accessLogs.length > 15) accessLogs.pop(); // เก็บ 15 รายการล่าสุด
+        if(accessLogs.length > 15) accessLogs.pop(); 
 
         localStorage.setItem('deedose_access_history', JSON.stringify(accessLogs));
         renderAccessLogs();
@@ -348,7 +371,6 @@
         tbody.innerHTML = accessLogs.map(l => `<tr><td>${l.time}</td><td>${l.device}</td></tr>`).join('');
     }
 
-    // Service Worker Registration
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('sw.js')
@@ -367,7 +389,6 @@
         }
     }
 
-    // โหลดข้อมูลโปรไฟล์
     document.getElementById('userGender').value = profile.gender;
     document.getElementById('userAge').value = profile.age;
     document.getElementById('petSelect').value = profile.pet;
@@ -676,7 +697,6 @@
         }
     }, 1000);
 
-    // เรียกทำงานตั้งแต่นาทีแรก
     trackUserAccess();
     renderList();
     renderCalendar();
