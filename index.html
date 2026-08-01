@@ -59,7 +59,7 @@
         button:hover { background: var(--primary); }
         .btn-cancel { background: #94a3b8; color: #fff; margin-top: 6px; }
 
-        /* Companion Box (สัตว์เลี้ยงกลับมาแล้ว!) */
+        /* Companion Box */
         .companion-box { 
             text-align: center; background: #eff6ff; border: 2px dashed #bfdbfe; 
             border-radius: 16px; padding: 15px; margin-top: 10px;
@@ -106,6 +106,11 @@
         }
         .alarm-box { animation: pulse 0.7s infinite alternate; }
         @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.03); } }
+
+        /* Access Log Table */
+        .log-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
+        .log-table th, .log-table td { border: 1px solid var(--border); padding: 8px; text-align: left; }
+        .log-table th { background: #f1f5f9; color: var(--primary); }
     </style>
 </head>
 <body>
@@ -149,7 +154,6 @@
                     </div>
                 </div>
 
-                <!-- สัตว์เลี้ยงเลือกได้ 🐱🐶🐰🐻 -->
                 <div class="companion-box">
                     <div class="pet-speech" id="petTalk">สวัสดีครับ! ให้ผมช่วยดูแลเรื่องทานยานะครับ</div>
                     <div class="pet-avatar" id="petDisplay">🐱</div>
@@ -164,7 +168,7 @@
                 </div>
             </div>
 
-            <!-- Main Input Form -->
+            <!-- Input Form -->
             <div class="card">
                 <h2 id="formTitle">เพิ่มรายการยาใหม่</h2>
                 <input type="hidden" id="editId">
@@ -231,7 +235,7 @@
             </div>
         </div>
 
-        <!-- Right Side: Calendar & Saved List -->
+        <!-- Right Side: Calendar, Saved List & User Access Logs -->
         <div>
             <!-- Calendar Card -->
             <div class="card">
@@ -252,11 +256,27 @@
                 <h2 id="t-listHeader">รายการยาที่ต้องรับประทาน</h2>
                 <div id="medicineList"></div>
             </div>
+
+            <!-- USER ACCESS LOGS (ระบบเช็กผู้เข้าใช้งาน) -->
+            <div class="card">
+                <h2>📊 ประวัติการเข้าใช้งานระบบ (User Access Logs)</h2>
+                <div style="max-height: 180px; overflow-y: auto;">
+                    <table class="log-table">
+                        <thead>
+                            <tr>
+                                <th>วัน-เวลาที่เข้าใช้งาน</th>
+                                <th>อุปกรณ์ที่ใช้</th>
+                            </tr>
+                        </thead>
+                        <tbody id="accessLogList"></tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
-<!-- Modal Persistent Alarm (สัตว์เลี้ยงมาช่วยปลุกเด้งบนจอ!) -->
+<!-- Modal Persistent Alarm -->
 <div class="modal-overlay" id="alarmModal">
     <div class="modal-box alarm-box">
         <div style="font-size: 60px;" id="alarmPet">🐱</div>
@@ -307,6 +327,26 @@
             days: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
         }
     };
+
+    // ระบบบันทึกประวัติการเข้าใช้งาน (Access Tracking)
+    function trackUserAccess() {
+        let accessLogs = JSON.parse(localStorage.getItem('deedose_access_history')) || [];
+        const now = new Date();
+        const dateStr = now.toLocaleString('th-TH');
+        const deviceType = /Mobi|Android/i.test(navigator.userAgent) ? '📱 มือถือ (Mobile)' : '💻 คอมพิวเตอร์ (Desktop)';
+
+        accessLogs.unshift({ time: dateStr, device: deviceType });
+        if(accessLogs.length > 15) accessLogs.pop(); // เก็บ 15 รายการล่าสุด
+
+        localStorage.setItem('deedose_access_history', JSON.stringify(accessLogs));
+        renderAccessLogs();
+    }
+
+    function renderAccessLogs() {
+        const accessLogs = JSON.parse(localStorage.getItem('deedose_access_history')) || [];
+        const tbody = document.getElementById('accessLogList');
+        tbody.innerHTML = accessLogs.map(l => `<tr><td>${l.time}</td><td>${l.device}</td></tr>`).join('');
+    }
 
     // Service Worker Registration
     if ('serviceWorker' in navigator) {
@@ -636,6 +676,8 @@
         }
     }, 1000);
 
+    // เรียกทำงานตั้งแต่นาทีแรก
+    trackUserAccess();
     renderList();
     renderCalendar();
 </script>
